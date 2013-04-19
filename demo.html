@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="waterfall_min.js"></script>
+<script>
+$(document).ready(function() {
+	var nextpage = 1;
+	var debug = false;
+	$('#ColumnContainer').WaterFall({
+		debug: debug,    //console.log 的开关
+		col: 2,      // min columns
+		width: 230,      // every blocked's width 
+		colspan: 10,      // default space between cols
+		backtotop: '#BackToTop',    //backToTop's id 
+		notice: '#loadingPins',      // notice
+		getImageData: function(callback) {
+			//api config
+			var api = {	
+				url: 'http://api.flickr.com/services/rest/',
+				method: 'flickr.photos.search',
+				api_key: '5d93c2e473e39e9307e86d4a01381266',
+				tags: 'rose',
+				per_page: 20,
+				page: nextpage,
+				format: 'json'		
+			};
+			
+			//api url
+			var apiCall = api.url + '?method=' + api.method + '&api_key=' + api.api_key +
+				  '&tags=' + api.tags + '&page=' + api.page +'&per_page=' + api.per_page +
+				  '&format=' + api.format +'&_ksTS=1365144900923_27&jsoncallback=?';	
+				  
+			$.getJSON(apiCall, function(data){
+				if(debug && console) console.log(apiCall);
+
+				var items = [], 
+				    hasNextPage = true;
+				if (data.stat === "ok") {
+					$.each(data.photos.photo, function(i, photo) {
+						var img_src = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + 
+		                      		  '/' + photo.id + '_' + photo.secret + '_' + 'm.jpg';
+		                      
+		        		var a_href = "http://www.flickr.com/photos/" + photo.owner + "/" + photo.id + "/";
+		        		var title  = photo.title;
+		        
+		        		if(debug && console) console.log('img_src ' + img_src);
+		        		if(debug && console) console.log('a_href ' + a_href);
+		        
+		        		var height = Math.round(Math.random()*(300 - 180) + 180);
+		        		if(debug && console) console.log(height);
+		        
+		        		var item = {
+		        			'img_src' : img_src,
+		        			'a_href'  : a_href,
+		        			'title'   : title,
+		        			'img_height'  : height
+		        		};
+		        
+		        		items.push(item);
+		        		if(debug && console) console.log(items);				      
+					})
+										
+					if (nextpage > api.per_page) {
+				    	hasNextPage = false;
+				    }
+				    
+					callback(items, hasNextPage);
+				
+					nextpage = data.photos.page + 1;
+
+				}else{				
+					callback(items, hasNextPage);
+				}
+			});		
+		},
+		
+		renderItemHtml: function(data) {
+			var html = '';
+			$.each(data, function(i, item) {
+						
+				html += '<div class="pin '+ item.data_col +' '+ item.data_id +'" style="'+
+        				'top:'+ item.top +'px;left:'+ item.left + 'px; height:'+ item.height +'px">' + 	
+						'<a href="' + item.a_href + '" class="image">' +
+        		    	'<img height="'+ item.img_height +'px" style="height:' + item.img_height + 
+        		    	'px" alt="'+ item.title +'" src="'+ item.img_src +'">' +
+        		    	'</a><p class="description">' + item.title + '</p></div>';	
+        	});
+			return html;
+		}
+	});	
+});
+
+</script>
+<style>
+body {background-color:#cccccc;}
+#loadingPins {padding:15px 0; text-align:center; position:fixed; display:none; width:100%}
+.pin {width:190px; padding:10px; display:inline; float:left; background-color:#ffffff; position:absolute; margin: 10px;}
+.image {position:relative; display:block; width:190px; overflow:hidden;}
+.pin p {margin:10px 0px 0px 0px; height:32px; overflow:hidden; padding:0px;}
+#BackToTop {position:fixed; right:9px; bottom:9px; text-align:center; text-transform:uppercase; color:#41545F; background-color:white; width:50px; padding:10px; opacity:0.9;}
+.top {top: 9px;}
+.bottom {bottom: 20px;}
+.show{display: block;}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+	<div id="wrapper">
+		<div id="button_container"></div>
+		<div id="article">
+			<div id="ColumnContainer" ></div>
+			<a id="BackToTop" href="#" style="display:none;">Scorll to Top</a>
+			<div id="loadingPins" class="top">
+				<img src="http://img03.taobaocdn.com/tps/i3/T1Ar9xXg0JXXXXXXXX-16-16.gif" alt="Pin Loader Image">
+				<span>正在加载</span>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
