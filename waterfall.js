@@ -2,8 +2,7 @@
  * @name jQuery waterfall plugin
  * @version 1.0.1
  * @create 2013.4.16
- * @lastmodified 2013.4.19
- * @description Based on jQuery 1.4+
+ * @lastmodified 2013.4.20
  * @author Kaito  (yangkaituo@gmail.com)
  */
 (function($) {
@@ -86,7 +85,6 @@
 	}
 	
 /**
- * @class  waterfall
  * @constructor 
  * @param     提供的option接口
  * @param     需要加载waterfall数据的id的jQuery实例
@@ -150,7 +148,6 @@ var waterfall = function(api, This, tools) {
 	}
 	
 	/**
-	 * @class  waterfall
 	 * @constructor
 	 * @private   name: _getShortestColumnNumber  function  找到存放top值最小的一项
 	 * @private   name: _getTop  function 取div的top值  @param 列项
@@ -273,7 +270,6 @@ var waterfall = function(api, This, tools) {
 	};
 	
 	/**
-	 * object
 	 * @return  start method 绑定scroll事件 
 	 *          Dynamic load waterfall items by monitor window scroll.
 	 * @return  pause method 解除绑定
