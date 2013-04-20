@@ -105,7 +105,5 @@ $(document).ready(function() {
 2. 传给callback的items的数据结构很重要，关系到最后rederItemHtml方法的展现形式.比如我传的是[{},{},{}...] 那么rederItemHtml的data 也是[{},{},{}...]。如果我传递的是{1:{},2:{},3:{}....} 那么data参数拿到的也是个对象，所以在用$.each的时候就不适合了。
 
 有任何问题请与我联系：yangkaituo AT gmail.com
--------------------------------------------
 
 或访问我的: http://eclipseongoing.diandian.com/
------------------------------------------------
