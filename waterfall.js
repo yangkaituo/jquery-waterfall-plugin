@@ -1,6 +1,6 @@
 /**
  * @name jQuery waterfall plugin
- * @version 1.0.1
+ * @version 1.0.2
  * @create 2013.4.16
  * @lastmodified 2013.4.20
  * @author Kaito  (yangkaituo@gmail.com)
