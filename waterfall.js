@@ -91,8 +91,10 @@
  * @param     new Tools的实例
  */	
 var waterfall = function(api, This, tools) {
-	var cols, colspan, width, settings;
-	
+	var cols, colspan, width, settings,
+		resizing = false,
+		timer = null;	
+		
 	// 设置接口的默认配置
 	// 与传入的option合并
 	// @return 一个object
@@ -126,25 +128,45 @@ var waterfall = function(api, This, tools) {
 	if(settings.debug && console) console.dir(settings);
 	if(settings.debug && console) console.log('实际列 ' + settings.cols);
 	if(settings.debug && console) console.log('实际列间距 ' + settings.colspan);
+
+	// 设计函数用来判断过度的窗口调整
+	function lazyReSize(WaterFall) {
+		if (timer == null && resizing == false) {
+			if(settings.debug && console) console.log('还没有resize 设置setimeout');
+			timer = setTimeout(function(){reSize(WaterFall);}, 500); 
+		}else if ( timer != null && resizing == false) {
+			if(settings.debug && console) console.log('将要resize');
+			clearTimeout(timer);
+			timer = setTimeout(function(){reSize(WaterFall);}, 500);
+		}else if ( timer != null && resizing == true) {
+			if(settings.debug && console) console.log('正在resize');
+			timer = setTimeout(function(){reSize(WaterFall);}, 500);
+		}
+	}	
 	
 	//当窗体的宽度被改变时调用这个函数，并重新计算列数(cols)和列间距(colspan) 
 	//并且调用WF的reflow方法，进行重绘
 	//@param  WF的实例
 	function reSize(WaterFall) {		
+		if(settings.debug && console) console.log('start resize..');
+		resizing = true;	
+
 		var newWidth =  This.width();
 		if(settings.debug && console) console.log('new width ' + newWidth);
 		
 		var o = {};
 		if (newWidth > settings.min_width) {			
 			o.cols = Math.floor(newWidth / settings.width);			
-			o.colspan = Math.floor((newWidth - settings.cols * settings.width) / (settings.cols - 1));
-		}
-			
-		if(settings.debug && console) console.log(o);
-		settings = $.extend(settings, o);
-		if(settings.debug && console) console.dir(settings);	
+			o.colspan = Math.floor((newWidth - o.cols * settings.width) / (o.cols - 1));
+
+			if(settings.debug && console) console.log(o);
+			settings = $.extend(settings, o);
+			if(settings.debug && console) console.dir(settings);	
 		
-		WaterFall.reflow();
+			WaterFall.reflow();
+		}
+		resizing = false;
+		timer = null;
 	}
 	
 	/**
@@ -345,7 +367,7 @@ var waterfall = function(api, This, tools) {
 	settings.getImageData(callback);
 	
 	// 对窗口宽度监听
-	$(window).resize(function (){reSize(wf)});
+	$(window).resize(function (){lazyReSize(wf)});
 	
 	// 为back to top绑定方法
 	$(settings.backtotop).bind('click', function() {
